@@ -1,4 +1,8 @@
 #include "edgedetector.hpp"
+#include <cmath>
+#include <ctgmath>
+
+#include <iostream>
 
 void EdgeDetector::magnitude(QImage& input, const QImage& gx, const QImage& gy) {
     quint8 *line;
