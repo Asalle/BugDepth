@@ -8,33 +8,36 @@ Accumulator::Accumulator()
 {
 }
 
-void Accumulator::accumulate(QImage& original, QImage& grayScale)
+void Accumulator::accumulate(QImage &image, QImage &grayScale)
 {
-//    QLabel myLabel;
-//    myLabel.setPixmap(QPixmap::fromImage(original));
-//    myLabel.show();
+    QImage& out = accumulated;
+    QRgb *line;
+    QRgb *imLine;
+    quint8 *grayLine;
+    for (int y = 0; y < image.height(); y++) {
+        line = reinterpret_cast<QRgb*>(out.scanLine(y));
+        imLine = reinterpret_cast<QRgb*>(image.scanLine(y));
+        grayLine = grayScale.scanLine(y);
+        for (int x = 0; x < image.width(); x++) {
+            if (line[x] == 0x00 && grayLine[x] > 0x55)
+                line[x] = imLine[x];
+        }
+    }
+}
 
-    std::cout << original.height() << " " << original.width() << std::endl;
+void Accumulator::setBg(QImage &bg)
+{
+    QRgb *acline;
+    QRgb *bgline;
 
-    for (int y = 0; y < original.height(); y++) {
-//        uchar* grayline = grayScale.scanLine(y);
-        uchar* origLine = original.scanLine(y);
-        uchar* acumLine = accumulated.scanLine(y);
-        memcpy(acumLine, origLine, original.width());
+    for (int y = 0; y < bg.height(); y++) {
+        acline = reinterpret_cast<QRgb*>(accumulated.scanLine(y));
+        bgline = reinterpret_cast<QRgb*>(bg.scanLine(y));
 
-//        for (int x = 0; x < original.height(); x++) {
-////            QColor color = QColor::fromRgb(grayline[x]);
-////            int c, m, y, k, al;
-////            color.getCmyk(&c, &m, &y, &k, &al);
-////            if (c == 0 && m == 0 && y == 0 && k == 0)
-////            {
-//                int val = origLine[x];
-//                std::cout << origLine[x] << " ";
-////                if (acumLine[x] == 0x00)
-////                    acumLine[x] = 0x51;
-//                    acumLine[x] = qBound(0x00, val, 0xFF);
-////            }
-//        }
+        for (int x = 0; x < bg.width(); x++) {
+            if (acline[x] < 0x10)
+                acline[x] = bgline[x];
+        }
     }
 }
 
