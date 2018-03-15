@@ -1,12 +1,24 @@
-#include "edgedetector.hpp"
 #include <cmath>
 #include <ctgmath>
 
-#include <iostream>
+#include "edgedetector.hpp"
+
+namespace bugDepth {
+
+template<class T, size_t Rows, size_t Cols> using matrix = std::array<std::array<T, Cols>, Rows>;
+const matrix<int, 3, 3> sobelx {{ {{-1, 0, 1}}, {{-2, 0, 2}}, {{-1, 0, 1}} }};
+const matrix<int, 3, 3> sobely {{ {{1, 2, 1}}, {{0, 0, 0}}, {{-1, -2, -1}} }};
+
+QImage EdgeDetector::sobel(QImage& original) {
+    QImage input = convertToGrayScale(original);
+    QImage res(input.size(), input.format());
+    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
+    return res;
+}
 
 void EdgeDetector::magnitude(QImage& input, const QImage& gx, const QImage& gy) {
-    quint8 *line;
-    const quint8 *gx_line, *gy_line;
+    quint8 *line = nullptr;
+    const quint8 *gx_line = nullptr, *gy_line = nullptr;
 
     for (int y = 0; y < input.height(); y++) {
         line = input.scanLine(y);
@@ -18,15 +30,14 @@ void EdgeDetector::magnitude(QImage& input, const QImage& gx, const QImage& gy) 
     }
 }
 
-
 QImage EdgeDetector::convolution(const auto& kernel, const QImage& image) {
     int kw = kernel[0].size(), kh = kernel.size(),
         offsetx = kw / 2, offsety = kw / 2;
     QImage out(image.size(), image.format());
-    float sum;
+    float sum = 0;
 
-    quint8 *line;
-    const quint8 *lookup_line;
+    quint8 *line = nullptr;
+    const quint8 *lookup_line = nullptr;
 
     for (int y = 0; y < image.height(); y++) {
         line = out.scanLine(y);
@@ -51,12 +62,9 @@ QImage EdgeDetector::convolution(const auto& kernel, const QImage& image) {
     return out;
 }
 
-template<class T, size_t Rows, size_t Cols> using matrix = std::array<std::array<T, Cols>, Rows>;
-const matrix<int, 3, 3> sobelx {{ {{-1, 0, 1}}, {{-2, 0, 2}}, {{-1, 0, 1}} }};
-const matrix<int, 3, 3> sobely {{ {{1, 2, 1}}, {{0, 0, 0}}, {{-1, -2, -1}} }};
+QImage EdgeDetector::convertToGrayScale(QImage &original)
+{
+    return original.convertToFormat(QImage::Format_Grayscale8);
+}
 
-QImage EdgeDetector::sobel(const QImage& input) {
-    QImage res(input.size(), input.format());
-    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
-    return res;
 }

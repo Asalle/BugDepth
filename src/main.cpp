@@ -8,7 +8,7 @@
 int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
-    EdgeDetector detector;
+    bugDepth::EdgeDetector detector;
     Accumulator accumulator;
 
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
@@ -16,10 +16,7 @@ int main(int argc, char **argv)
     for (auto& filename: filenames)
     {
         QImage testImage(filename.c_str());
-
-        QImage grayscale = testImage.convertToFormat(QImage::Format_Grayscale8);
-        QImage edges = detector.sobel(grayscale);
-
+        QImage edges = detector.sobel(testImage);
         accumulator.accumulate(testImage, edges);
     }
 
