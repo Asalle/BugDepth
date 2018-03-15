@@ -4,6 +4,7 @@
 #include "edgedetector.hpp"
 #include "accumulator.hpp"
 #include "argparser.hpp"
+#include "img.hpp"
 
 int main(int argc, char **argv)
 {
@@ -16,16 +17,18 @@ int main(int argc, char **argv)
     for (auto& filename: filenames)
     {
         QImage testImage(filename.c_str());
-        QImage edges = detector.sobel(testImage);
-        accumulator.accumulate(testImage, edges);
+        bugDepth::Img rawImage(testImage.width(), testImage.height(), testImage.bits());
+        bugDepth::Img edges = detector.sobel(rawImage);
+//        accumulator.accumulate(testImage, edges);
     }
 
-    QImage bgImage = QImage(filenames[0].c_str());
-    accumulator.setBg(bgImage);
+//    QImage bgImage = QImage(filenames[0].c_str());
+//    accumulator.setBg(bgImage);
 
-    QLabel myLabel;
-    myLabel.setPixmap(QPixmap::fromImage(accumulator.getAcumulated()));
-    myLabel.show();
+//    QLabel myLabel;
+//    myLabel.setPixmap(QPixmap::fromImage(accumulator.getAcumulated()));
+//    myLabel.show();
 
-    return app.exec();
+//    return app.exec();
+    return 0;
 }

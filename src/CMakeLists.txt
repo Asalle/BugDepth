@@ -2,7 +2,8 @@ set(SOURCES
     main.cpp
     edgedetector.cpp
     accumulator.cpp
-    argparser.cpp)
+    argparser.cpp
+    img.cpp)
 
 add_executable(bugDepth ${SOURCES})
 

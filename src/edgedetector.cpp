@@ -9,11 +9,11 @@ template<class T, size_t Rows, size_t Cols> using matrix = std::array<std::array
 const matrix<int, 3, 3> sobelx {{ {{-1, 0, 1}}, {{-2, 0, 2}}, {{-1, 0, 1}} }};
 const matrix<int, 3, 3> sobely {{ {{1, 2, 1}}, {{0, 0, 0}}, {{-1, -2, -1}} }};
 
-QImage EdgeDetector::sobel(QImage& original) {
-    QImage input = convertToGrayScale(original);
-    QImage res(input.size(), input.format());
-    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
-    return res;
+Img EdgeDetector::sobel(Img original) {
+    Img input = convertToGrayScale(original);
+//    QImage res(input.size(), input.format());
+//    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
+    return input;
 }
 
 void EdgeDetector::magnitude(QImage& input, const QImage& gx, const QImage& gy) {
@@ -62,9 +62,16 @@ QImage EdgeDetector::convolution(const auto& kernel, const QImage& image) {
     return out;
 }
 
-QImage EdgeDetector::convertToGrayScale(QImage &original)
+Img EdgeDetector::convertToGrayScale(Img original)
 {
-    return original.convertToFormat(QImage::Format_Grayscale8);
+    int height = original.height;
+    int width = original.width;
+    for (int i = 0; i < height; ++i)
+    {
+        uchar* line = original.data[width*i];
+
+    }
+//    return original.convertToFormat(QImage::Format_Grayscale8);
 }
 
 }
