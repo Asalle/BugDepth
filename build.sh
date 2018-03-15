@@ -4,6 +4,6 @@
 #rm -rf build &> /dev/null
 #mkdir build
 cd build
-cmake ..
-#cmake -DBUILD_TESTING:BOOL=TRUE ..
+#cmake ..
+cmake -DBUILD_TESTING:BOOL=TRUE ..
 make

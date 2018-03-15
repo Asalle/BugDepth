@@ -32,7 +32,10 @@ if (CMAKE_VERSION VERSION_LESS 2.8.11)
   include_directories("${gtest_SOURCE_DIR}/include")
 endif()
 
-# Now simply link against gtest or gtest_main as needed. Eg
-add_executable(example ut/example.cpp)
-target_link_libraries(example gtest_main)
-add_test(NAME example_test COMMAND example)
+set(argParserSources
+    ${CMAKE_SOURCE_DIR}/src/argparser.cpp)
+
+add_executable(tests ut/testArgParser.cpp ${argParserSources})
+include_directories(${CMAKE_SOURCE_DIR}/src)
+target_link_libraries(tests gtest_main "stdc++fs")
+add_test(NAME testArgParser COMMAND tests)

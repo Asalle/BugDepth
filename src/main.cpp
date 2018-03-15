@@ -1,10 +1,9 @@
 #include <iostream>
 #include <QLabel>
 #include <QApplication>
-#include <QDirIterator>
-#include <vector>
 #include "edgedetector.hpp"
 #include "accumulator.hpp"
+#include "argparser.hpp"
 
 int main(int argc, char **argv)
 {
@@ -12,21 +11,7 @@ int main(int argc, char **argv)
     EdgeDetector detector;
     Accumulator accumulator;
 
-    std::vector<std::string> filenames;
-    QDirIterator it("res/bug/");
-    while (it.hasNext())
-    {
-        QString filePath = it.next();
-        QString fileName = it.fileInfo().fileName();
-        if (fileName == ".." or fileName == "." or fileName == "result.png")
-        {
-            continue;
-        }
-        filenames.emplace_back(filePath.toStdString());
-    }
-
-    std::sort(filenames.begin(), filenames.end());
-    std::reverse(filenames.begin(), filenames.end());
+    auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
 
     for (auto& filename: filenames)
     {
