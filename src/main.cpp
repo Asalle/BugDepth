@@ -4,12 +4,14 @@
 #include "argparser.hpp"
 #include "edgedetector.hpp"
 
-void prepareResultDir()
+QDir prepareResultDir()
 {
     QDir resultdir("res/result");
     if (resultdir.exists())
         resultdir.removeRecursively();
     resultdir.mkpath(".");
+
+    return resultdir;
 }
 
 auto main() -> int
@@ -29,7 +31,7 @@ auto main() -> int
     }
     accumulator.setBg(sampleImage);
 
-    prepareResultDir();
+    auto resultdir = prepareResultDir();
 
     QImage&& result = accumulator.getAcumulated();
     result.save(resultdir.filePath("result.png"));
