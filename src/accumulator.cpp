@@ -1,10 +1,7 @@
 #include "accumulator.hpp"
-#include <iostream>
-#include <QPixmap>
-#include <QLabel>
 
-Accumulator::Accumulator()
-    : accumulated(QPixmap(1344, 1021).toImage())
+Accumulator::Accumulator(unsigned int width, unsigned int height)
+    : accumulated(width, height, QImage::Format::Format_ARGB32)
 {
 }
 
