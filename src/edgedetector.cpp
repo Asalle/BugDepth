@@ -4,7 +4,7 @@
 #include "edgedetector.hpp"
 
 #include <iostream>
-#include <opencv2/opencv.hpp>
+//#include <opencv2/opencv.hpp>
 
 namespace bugDepth {
 
@@ -67,14 +67,15 @@ QImage EdgeDetector::convolution(const auto& kernel, const QImage& image) {
 
 Img EdgeDetector::convertToGrayScale(Img original)
 {
-    int height = original.height;
-    int width = original.width;
+    int height = original.getHeight();
+    int width = original.getWidth();
 
-    uchar *grayScale = new uchar[height*width];
+    Img grayScaleImg = Img(width, height, Format::GRAYSCALE8);
+    uchar *grayScaleData = &grayScaleImg.getData()[0];
     for (int y = 0; y < height; ++y)
     {
-        uchar* origLine = original.data + (y*width*4);
-        uchar* grayLine = grayScale  + (y*width);
+        uchar* origLine = &original.getData()[0] + (y*width*4);
+        uchar* grayLine = grayScaleData  + (y*width);
         int grayX = 0;
         for (int x = 0; x < width*4; x+=4)
         {
@@ -86,7 +87,7 @@ Img EdgeDetector::convertToGrayScale(Img original)
         }
     }
 
-    return Img(width, height, grayScale);
+    return grayScaleImg;
 }
 
 }
