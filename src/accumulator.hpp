@@ -12,4 +12,5 @@ public:
 
 private:
     QImage accumulated;
+    unsigned int treshold = 0x55;
 };

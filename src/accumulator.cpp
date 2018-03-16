@@ -16,7 +16,7 @@ void Accumulator::accumulate(QImage &image, QImage &grayScale)
         imLine = reinterpret_cast<QRgb*>(image.scanLine(y));
         grayLine = grayScale.scanLine(y);
         for (int x = 0; x < image.width(); x++) {
-            if (line[x] == 0x00 && grayLine[x] > 0x55)
+            if (line[x] == 0x00 && grayLine[x] > treshold)
                 line[x] = imLine[x];
         }
     }
