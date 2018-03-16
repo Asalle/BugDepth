@@ -3,6 +3,9 @@
 
 #include "edgedetector.hpp"
 
+#include <iostream>
+#include <opencv2/opencv.hpp>
+
 namespace bugDepth {
 
 template<class T, size_t Rows, size_t Cols> using matrix = std::array<std::array<T, Cols>, Rows>;
@@ -66,11 +69,26 @@ Img EdgeDetector::convertToGrayScale(Img original)
 {
     int height = original.height;
     int width = original.width;
-    for (int i = 0; i < height; ++i)
+
+    uchar *grayScale = new uchar[height*width];
+    for (int y = 0; y < height; ++y)
     {
-        uchar* line = original.data[width*i];
+        uchar* origLine = original.data + (y*width*4);
+        uchar* grayLine = grayScale  + (y*width);
+        int grayX = 0;
+        for (int x = 0; x < width; x+=4)
+        {
+            uchar r = origLine[x];
+            uchar g = origLine[x+1];
+            uchar b = origLine[x+2];
+            uchar a = origLine[x+3];
+            grayLine[grayX] = (r + g + b + a)/4;
+            grayX++;
+        }
 
     }
+
+    return Img(width, height, grayScale);
 //    return original.convertToFormat(QImage::Format_Grayscale8);
 }
 
