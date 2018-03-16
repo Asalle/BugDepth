@@ -4,7 +4,7 @@
 #include "edgedetector.hpp"
 
 #include <iostream>
-//#include <opencv2/opencv.hpp>
+#include <opencv2/opencv.hpp>
 
 namespace bugDepth {
 
@@ -82,10 +82,18 @@ Img EdgeDetector::convertToGrayScale(Img original)
             uchar r = origLine[x];
             uchar g = origLine[x+1];
             uchar b = origLine[x+2];
+//            std::cout << (int)origLine[x] << " " << (int)origLine[x+1] << " " << (int)origLine[x+2];
+//            grayLine[grayX] = 200;
             grayLine[grayX] = (r + g + b)/3;
             grayX++;
         }
     }
+
+//    cv::Mat mat(grayScaleImg.getHeight(), grayScaleImg.getWidth(), CV_8UC1);
+//    mat.data = &original.getData()[0];
+
+//    cv::imshow("grayImg", mat);
+//    cv::waitKey(0);
 
     return grayScaleImg;
 }

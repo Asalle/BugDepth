@@ -15,6 +15,7 @@ class Img
 {
 public:
     Img(unsigned int width, unsigned int height, Format format);
+    Img(unsigned int width, unsigned int height, Format format, unsigned char* data);
     unsigned int getWidth() const { return width; }
     unsigned int getHeight() const { return height; }
     std::vector<unsigned char>& getData();
