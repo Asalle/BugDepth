@@ -1,13 +1,28 @@
 #pragma once
 
+#include <map>
+#include <vector>
+
 namespace bugDepth {
 
-struct Img
+enum class Format : uchar
 {
-    Img(unsigned int width, unsigned int height, unsigned char *data);
-    unsigned int width;
-    unsigned int height;
-    unsigned char *data;
+    GRAYSCALE8,
+    RGBA32
+}
+
+class Img
+{
+//public:
+//    Img(unsigned int width, unsigned int height, Format format);
+//    unsigned int getWidth() { return width; }
+//    unsigned int getHeight() { return height; }
+//private:
+//    std::map<Format, unsigned int> bpp;
+//    unsigned int width;
+//    unsigned int height;
+//    std::vector<uchar> data;
+//    Format format;
 };
 
 }

@@ -5,5 +5,5 @@
 #mkdir build
 cd build
 #cmake ..
-cmake -DBUILD_TESTING:BOOL=TRUE ..
+cmake -DBUILD_TESTING:BOOL=FALSE ..
 make

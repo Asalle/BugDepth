@@ -17,15 +17,15 @@ int main(int argc, char **argv)
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
 
     QImage im(filenames[0].c_str());
-    bugDepth::Img rawIm(im.width(), im.height(), im.bits());
-    bugDepth::Img edges = detector.sobel(rawIm);
-    cv::Mat mat(im.height(), im.width(), CV_8UC1);
-    mat.data = edges.data;
+    bugDepth::Img rawIm(im.width(), im.height(), bugDepth::Format::RGBA32);
+//    bugDepth::Img edges = detector.sobel(rawIm);
+//    cv::Mat mat(im.height(), im.width(), CV_8UC1);
+//    mat.data = edges.data;
 
-    cv::imshow("mainImg", mat);
-    cv::waitKey(0);
+//    cv::imshow("mainImg", mat);
+//    cv::waitKey(0);
 
-    delete edges.data;
+//    delete edges.data;
 
 //    for (auto& filename: filenames)
 //    {

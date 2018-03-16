@@ -76,20 +76,17 @@ Img EdgeDetector::convertToGrayScale(Img original)
         uchar* origLine = original.data + (y*width*4);
         uchar* grayLine = grayScale  + (y*width);
         int grayX = 0;
-        for (int x = 0; x < width; x+=4)
+        for (int x = 0; x < width*4; x+=4)
         {
             uchar r = origLine[x];
             uchar g = origLine[x+1];
             uchar b = origLine[x+2];
-            uchar a = origLine[x+3];
-            grayLine[grayX] = (r + g + b + a)/4;
+            grayLine[grayX] = (r + g + b)/3;
             grayX++;
         }
-
     }
 
     return Img(width, height, grayScale);
-//    return original.convertToFormat(QImage::Format_Grayscale8);
 }
 
 }
