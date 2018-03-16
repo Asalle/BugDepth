@@ -1,6 +1,6 @@
-#include <iostream>
-#include <QLabel>
 #include <QApplication>
+#include <QImage>
+#include <QDir>
 #include "edgedetector.hpp"
 #include "accumulator.hpp"
 #include "argparser.hpp"
@@ -9,9 +9,10 @@ int main(int argc, char **argv)
 {
     QApplication app(argc, argv);
     bugDepth::EdgeDetector detector;
-    Accumulator accumulator;
 
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
+    QImage sampleImage(filenames[0].c_str());
+    Accumulator accumulator(sampleImage.width(), sampleImage.height());
 
     for (auto& filename: filenames)
     {
@@ -20,12 +21,18 @@ int main(int argc, char **argv)
         accumulator.accumulate(testImage, edges);
     }
 
-    QImage bgImage = QImage(filenames[0].c_str());
-    accumulator.setBg(bgImage);
+    accumulator.setBg(sampleImage);
 
-    QLabel myLabel;
-    myLabel.setPixmap(QPixmap::fromImage(accumulator.getAcumulated()));
-    myLabel.show();
+    QDir resultdir("res/result");
+    if (resultdir.exists())
+        resultdir.removeRecursively();
+    resultdir.mkpath(".");
 
-    return app.exec();
+    QImage&& result = accumulator.getAcumulated();
+    result.save(resultdir.filePath("result.png"));
+
+    QImage&& depthMap = detector.sobel(result);
+    depthMap.save(resultdir.filePath("depthMap.png"));
+
+    return 0;
 }
