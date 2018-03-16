@@ -1,16 +1,23 @@
-#include <QApplication>
-#include <QImage>
 #include <QDir>
-#include "edgedetector.hpp"
+#include <QImage>
 #include "accumulator.hpp"
 #include "argparser.hpp"
+#include "edgedetector.hpp"
 
-int main(int argc, char **argv)
+void prepareResultDir()
 {
-    QApplication app(argc, argv);
+    QDir resultdir("res/result");
+    if (resultdir.exists())
+        resultdir.removeRecursively();
+    resultdir.mkpath(".");
+}
+
+auto main() -> int
+{
     bugDepth::EdgeDetector detector;
 
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
+
     QImage sampleImage(filenames[0].c_str());
     Accumulator accumulator(sampleImage.width(), sampleImage.height());
 
@@ -20,13 +27,9 @@ int main(int argc, char **argv)
         QImage edges = detector.sobel(testImage);
         accumulator.accumulate(testImage, edges);
     }
-
     accumulator.setBg(sampleImage);
 
-    QDir resultdir("res/result");
-    if (resultdir.exists())
-        resultdir.removeRecursively();
-    resultdir.mkpath(".");
+    prepareResultDir();
 
     QImage&& result = accumulator.getAcumulated();
     result.save(resultdir.filePath("result.png"));
