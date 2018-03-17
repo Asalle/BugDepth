@@ -1,31 +1,32 @@
 #pragma once
 
-#include <map>
 #include <vector>
 
 namespace bugDepth {
 
-enum class Format : unsigned char
+using uchar = unsigned char;
+using uint = unsigned int;
+
+enum class Format : uchar
 {
     GRAYSCALE8,
     RGBA32
 };
 
+template<Format format>
 class Img
 {
 public:
-    Img(unsigned int width, unsigned int height, Format format);
-    Img(unsigned int width, unsigned int height, Format format, unsigned char* data);
-    unsigned int getWidth() const { return width; }
-    unsigned int getHeight() const { return height; }
-    std::vector<unsigned char>& getData();
+    Img(uint width, uint height);
+    Img(uint width, uint height, uchar* data);
+    uint getWidth() const { return width; }
+    uint getHeight() const { return height; }
+    uchar* getData() { return data.data(); }
 
 private:
-    std::map<Format, unsigned int> bpp;
-    unsigned int width;
-    unsigned int height;
-    std::vector<unsigned char> data;
-    Format format;
+    uint width;
+    uint height;
+    std::vector<uchar> data;
 };
 
 }
