@@ -51,4 +51,28 @@ Img<Format::RGBA32>::Img(uint w, uint h, uchar *dataToCopy)
     }
 }
 
+template<>
+uchar* Img<Format::RGBA32>::scanLine(int y)
+{
+    return reinterpret_cast<uchar*>(data.data() + y*width*sizeof(uint));
+}
+
+template<>
+uchar* Img<Format::GRAYSCALE8>::scanLine(int y)
+{
+    return data.data() + y*width*sizeof(uchar);
+}
+
+template<>
+const uchar* Img<Format::RGBA32>::constScanLine(int y) const
+{
+    return data.data() + y*width*sizeof(uint);
+}
+
+template<>
+const uchar* Img<Format::GRAYSCALE8>::constScanLine(int y) const
+{
+    return data.data() + y*width*sizeof(uchar);
+}
+
 }

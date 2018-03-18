@@ -22,6 +22,8 @@ public:
     uint getWidth() const { return width; }
     uint getHeight() const { return height; }
     uchar* getData() { return data.data(); }
+    uchar* scanLine(int y);
+    const uchar* constScanLine(int y) const;
 
 private:
     uint width;
