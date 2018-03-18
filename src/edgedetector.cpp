@@ -12,8 +12,8 @@ template<class T, size_t Rows, size_t Cols> using matrix = std::array<std::array
 const matrix<int, 3, 3> sobelx {{ {{-1, 0, 1}}, {{-2, 0, 2}}, {{-1, 0, 1}} }};
 const matrix<int, 3, 3> sobely {{ {{1, 2, 1}}, {{0, 0, 0}}, {{-1, -2, -1}} }};
 
-Img EdgeDetector::sobel(Img original) {
-    Img input = convertToGrayScale(original);
+GrayImg EdgeDetector::sobel(Img<Format::RGBA32> original) {
+    GrayImg input = convertToGrayScale(original);
 //    QImage res(input.size(), input.format());
 //    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
     return input;
@@ -65,35 +65,27 @@ QImage EdgeDetector::convolution(const auto& kernel, const QImage& image) {
     return out;
 }
 
-Img EdgeDetector::convertToGrayScale(Img original)
+GrayImg EdgeDetector::convertToGrayScale(Img<Format::RGBA32> original)
 {
     int height = original.getHeight();
     int width = original.getWidth();
 
-    Img grayScaleImg = Img(width, height, Format::GRAYSCALE8);
-    uchar *grayScaleData = &grayScaleImg.getData()[0];
+    GrayImg grayScaleImg(width, height);
+    uchar *grayScaleData = grayScaleImg.getData();
     for (int y = 0; y < height; ++y)
     {
-        uchar* origLine = &original.getData()[0] + (y*width*4);
+        uchar* sourceLine = original.getData() + (y*width*4);
         uchar* grayLine = grayScaleData  + (y*width);
         int grayX = 0;
         for (int x = 0; x < width*4; x+=4)
         {
-            uchar r = origLine[x];
-            uchar g = origLine[x+1];
-            uchar b = origLine[x+2];
-//            std::cout << (int)origLine[x] << " " << (int)origLine[x+1] << " " << (int)origLine[x+2];
-//            grayLine[grayX] = 200;
+            uchar r = sourceLine[x];
+            uchar g = sourceLine[x+1];
+            uchar b = sourceLine[x+2];
             grayLine[grayX] = (r + g + b)/3;
             grayX++;
         }
     }
-
-//    cv::Mat mat(grayScaleImg.getHeight(), grayScaleImg.getWidth(), CV_8UC1);
-//    mat.data = &original.getData()[0];
-
-//    cv::imshow("grayImg", mat);
-//    cv::waitKey(0);
 
     return grayScaleImg;
 }
