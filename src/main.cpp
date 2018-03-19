@@ -16,14 +16,15 @@ int main(int argc, char **argv)
 
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
 
-    QImage im(filenames[0].c_str());
+    QImage im("res/bug/result.png");
     bugDepth::Img<bugDepth::Format::RGBA32> rawIm(im.width(), im.height(), im.bits());
-    bugDepth::GrayImg edges = detector.sobel(rawIm);
-    cv::Mat mat(im.height(), im.width(), CV_8UC1);
-    mat.data = edges.getData();
+    auto edges = detector.sobel(rawIm);
+    QImage res(edges.getData(), im.width(), im.height(), QImage::Format_Grayscale8);
+//    cv::Mat mat(im.height(), im.width(), CV_8UC1);
+//    mat.data = edges.getData();
 
-    cv::imshow("mai1nImg", mat);
-    cv::waitKey(0);
+//    cv::imshow("mai1nImg", mat);
+//    cv::waitKey(0);
 
 //    delete edges.data;
 
@@ -38,10 +39,10 @@ int main(int argc, char **argv)
 //    QImage bgImage = QImage(filenames[0].c_str());
 //    accumulator.setBg(bgImage);
 
-//    QLabel myLabel;
-//    myLabel.setPixmap(QPixmap::fromImage(accumulator.getAcumulated()));
-//    myLabel.show();
+    QLabel myLabel;
+    myLabel.setPixmap(QPixmap::fromImage(res));
+    myLabel.show();
 
-//    return app.exec();
-    return 0;
+    return app.exec();
+//    return 0;
 }

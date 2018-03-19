@@ -11,10 +11,10 @@ using GrayImg = Img<Format::GRAYSCALE8>;
 class EdgeDetector
 {
 public:
-    GrayImg sobel(Img<Format::RGBA32> input);
+    GrayImg sobel(Img<Format::RGBA32>& input);
 private:
-    void magnitude(QImage& input, const QImage& gx, const QImage& gy);
-    QImage convolution(const auto& kernel, const QImage& image);
+    void magnitude(GrayImg& input, GrayImg gx, const GrayImg& gy);
+    GrayImg convolution(const auto& kernel, const GrayImg& image);
     GrayImg convertToGrayScale(Img<Format::RGBA32> original);
 };
 
