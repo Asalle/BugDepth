@@ -1,7 +1,7 @@
 # BugDepth
 Create a sharp image from a set of purposefully unsharp images :)
 
-##How to build
+## How to build
 
 to run the app you need 
 
@@ -28,11 +28,11 @@ the resulting image again.
 
 ## Remarks
 
-I did use QImage, but it's basically a wrapper around uchar\* to data, width, height 
+I did use QImage, but it's basically a wrapper around uchar* to data, width, height
 and format of  image, so it will be easy to add my custom Img class to do it, I just 
 don't have much time left to do this.
 
 Also, I figured out how to turn 32bpp RGBA to 8bpp grayscale -- the easiest way is to
-get the (r + g + b + a)/4, I've started to do this on branch develop.
+get the (r + g + b)/3, I've started to do this on branch develop.
 
 Thank you for the challenge, I really had a lot of fun.
