@@ -1,18 +1,18 @@
 #include <opencv2/opencv.hpp>
-#include <QDir>
+//#include <QDir>
 #include "accumulator.hpp"
 #include "argparser.hpp"
 #include "edgedetector.hpp"
 
-QDir prepareResultDir()
-{
-    QDir resultdir("res/result");
-    if (resultdir.exists())
-        resultdir.removeRecursively();
-    resultdir.mkpath(".");
+//QDir prepareResultDir()
+//{
+//    QDir resultdir("res/result");
+//    if (resultdir.exists())
+//        resultdir.removeRecursively();
+//    resultdir.mkpath(".");
 
-    return resultdir;
-}
+//    return resultdir;
+//}
 
 auto main() -> int
 {
@@ -29,10 +29,13 @@ auto main() -> int
     {
         cv::Mat testImageMat = cv::imread(filename.c_str(), CV_LOAD_IMAGE_COLOR);
         bugDepth::RgbImg testImage(width, height, testImageMat.data);
-//        bugDepth::GrayImg edges = detector.sobel(testImage);
+        bugDepth::GrayImg edges = detector.sobel(testImage);
+        cv::Mat temp(edges.getHeight(), edges.getWidth(), CV_8UC1, edges.getData());
+        cv::imwrite("res/result.png", temp);
 //        accumulator.accumulate(testImage, edges, depth);
         depth += 0x10;
     }
+
 //    accumulator.setBg(sampleImage);
 
 //    auto resultdir = prepareResultDir();

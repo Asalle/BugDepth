@@ -1,6 +1,6 @@
 #pragma once
 
-#include <QImage>
+//#include <QImage>
 
 #include "img.hpp"
 
@@ -16,7 +16,7 @@ public:
 private:
     void magnitude(GrayImg& input, GrayImg gx, const GrayImg& gy);
     GrayImg convolution(const auto& kernel, const GrayImg& image);
-    GrayImg convertToGrayScale(Img<Format::RGBA32> original);
+    GrayImg convertToGrayScale(const Img<Format::RGBA32>& original);
 };
 
 }

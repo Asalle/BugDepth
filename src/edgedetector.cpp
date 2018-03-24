@@ -5,7 +5,7 @@
 
 #include "edgedetector.hpp"
 
-// most of this file is from github.com/vaultah/edge-detection/
+// most of this file is from github.com/vaultah/edge-detection/, modified
 
 namespace bugDepth {
 
@@ -18,10 +18,11 @@ GrayImg EdgeDetector::sobel(Img<Format::RGBA32>& original) {
 //    QImage temp(original.getData(), original.getWidth(), original.getHeight(), QImage::Format_RGB32);
 //    QImage input = temp.convertToFormat(QImage::Format_Grayscale8);
 //    QImage res(input.size(), input.format());
-    GrayImg res(original.getHeight(), original.getWidth());
-    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
+//    GrayImg res(original.getHeight(), original.getWidth());
+//    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
 //    return convolution(sobelx, input);
-    return res;
+//    return res;
+    return input;
 }
 
 void EdgeDetector::magnitude(GrayImg& input, GrayImg gx, const GrayImg& gy) {
@@ -66,24 +67,23 @@ GrayImg EdgeDetector::convolution(const auto& kernel, const GrayImg& image) {
                 }
             }
 
-            line[x] = qBound(0x00, static_cast<int>(sum), 0xFF);
+            line[x] = std::min(std::max(0x00, static_cast<int>(sum)), 0xFF);
         }
     }
 
     return out;
 }
 
-GrayImg EdgeDetector::convertToGrayScale(Img<Format::RGBA32> original)
+GrayImg EdgeDetector::convertToGrayScale(const Img<Format::RGBA32> &original)
 {
     int height = original.getHeight();
     int width = original.getWidth();
 
     GrayImg grayScaleImg(width, height);
-    uchar *grayScaleData = grayScaleImg.getData();
     for (int y = 0; y < height; ++y)
     {
-        uchar* sourceLine = original.getData() + (y*width*4);
-        uchar* grayLine = grayScaleData  + (y*width);
+        const uchar *sourceLine = original.constScanLine(y);
+        uchar *grayLine = grayScaleImg.scanLine(y);
         int grayX = 0;
         for (int x = 0; x < width*4; x+=4)
         {
