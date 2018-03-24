@@ -7,5 +7,5 @@ export Qt5_DIR="/opt/qt/5.10.1/gcc_64/lib/cmake/Qt5/"
 #mkdir build
 cd build
 #cmake ..
-cmake -DBUILD_TESTING:BOOL=TRUE ..
+cmake -DBUILD_TESTING:BOOL=FALSE ..
 make

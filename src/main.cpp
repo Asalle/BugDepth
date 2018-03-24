@@ -1,5 +1,6 @@
 #include <QDir>
 #include <QImage>
+#include <QTime>
 #include "accumulator.hpp"
 #include "argparser.hpp"
 #include "edgedetector.hpp"
@@ -23,20 +24,22 @@ auto main() -> int
     QImage sampleImage(filenames[0].c_str());
     Accumulator accumulator(sampleImage.width(), sampleImage.height());
 
+    int depth = 0x10;
     for (auto& filename: filenames)
     {
         QImage testImage(filename.c_str());
         QImage edges = detector.sobel(testImage);
-        accumulator.accumulate(testImage, edges);
+        accumulator.accumulate(testImage, edges, depth);
+        depth += 0x40;
     }
     accumulator.setBg(sampleImage);
 
     auto resultdir = prepareResultDir();
 
-    QImage&& result = accumulator.getAcumulated();
+    QImage&& result = accumulator.getSharpImage();
     result.save(resultdir.filePath("result.png"));
 
-    QImage&& depthMap = detector.sobel(result);
+    QImage&& depthMap = accumulator.getDepthMap();
     depthMap.save(resultdir.filePath("depthMap.png"));
 
     return 0;
