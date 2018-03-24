@@ -7,6 +7,7 @@
 namespace bugDepth {
 
 using GrayImg = Img<Format::GRAYSCALE8>;
+using RgbImg = Img<Format::RGBA32>;
 
 class EdgeDetector
 {
