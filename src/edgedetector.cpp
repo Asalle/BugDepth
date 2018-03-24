@@ -3,6 +3,8 @@
 
 #include "edgedetector.hpp"
 
+// most of this file is from github.com/vaultah/edge-detection/
+
 namespace bugDepth {
 
 template<class T, size_t Rows, size_t Cols> using matrix = std::array<std::array<T, Cols>, Rows>;
