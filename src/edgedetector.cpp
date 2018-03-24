@@ -1,11 +1,11 @@
-//#include <algorithm>
+#include <algorithm>
 #include <cmath>
 #include <ctgmath>
+#include <opencv2/opencv.hpp>
 
 #include "edgedetector.hpp"
 
-#include <iostream>
-#include <opencv2/opencv.hpp>
+// most of this file is from github.com/vaultah/edge-detection/
 
 namespace bugDepth {
 

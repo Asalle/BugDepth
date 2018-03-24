@@ -1,48 +1,45 @@
-#include <iostream>
-#include <QLabel>
-#include <QApplication>
-#include "edgedetector.hpp"
-//#include "accumulator.hpp"
-#include "argparser.hpp"
-#include "img.hpp"
-
 #include <opencv2/opencv.hpp>
+#include <QDir>
+#include <QImage>
+#include "accumulator.hpp"
+#include "argparser.hpp"
+#include "edgedetector.hpp"
 
-int main(int argc, char **argv)
+QDir prepareResultDir()
 {
-    QApplication app(argc, argv);
-    bugDepth::EdgeDetector detector;
-//    Accumulator accumulator;
+    QDir resultdir("res/result");
+    if (resultdir.exists())
+        resultdir.removeRecursively();
+    resultdir.mkpath(".");
 
+    return resultdir;
+}
+
+auto main() -> int
+{
+    bugDepth::EdgeDetector detector;
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
 
-    QImage im("res/bug/result.png");
-    bugDepth::Img<bugDepth::Format::RGBA32> rawIm(im.width(), im.height(), im.bits());
-    auto edges = detector.sobel(rawIm);
-    QImage res(edges.getData(), im.width(), im.height(), QImage::Format_Grayscale8);
-//    cv::Mat mat(im.height(), im.width(), CV_8UC1);
-//    mat.data = edges.getData();
+    QImage sampleImage(filenames[0].c_str());
+    Accumulator accumulator(sampleImage.width(), sampleImage.height());
 
-//    cv::imshow("mai1nImg", mat);
-//    cv::waitKey(0);
+    int depth = 0x10;
+    for (auto& filename: filenames)
+    {
+        QImage testImage(filename.c_str());
+        QImage edges = detector.sobel(testImage);
+        accumulator.accumulate(testImage, edges, depth);
+        depth += 0x10;
+    }
+    accumulator.setBg(sampleImage);
 
-//    delete edges.data;
+    auto resultdir = prepareResultDir();
 
-//    for (auto& filename: filenames)
-//    {
-//        QImage testImage(filename.c_str());
-//        bugDepth::Img rawImage(testImage.width(), testImage.height(), testImage.bits());
-//        bugDepth::Img edges = detector.sobel(rawImage);
-////        accumulator.accumulate(testImage, edges);
-//    }
+    QImage&& result = accumulator.getSharpImage();
+    result.save(resultdir.filePath("result.png"));
 
-//    QImage bgImage = QImage(filenames[0].c_str());
-//    accumulator.setBg(bgImage);
+    QImage&& depthMap = accumulator.getDepthMap();
+    depthMap.save(resultdir.filePath("depthMap.png"));
 
-    QLabel myLabel;
-    myLabel.setPixmap(QPixmap::fromImage(res));
-    myLabel.show();
-
-    return app.exec();
-//    return 0;
+    return 0;
 }
