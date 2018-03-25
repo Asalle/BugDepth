@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "img.hpp"
 
 namespace bugDepth {
@@ -14,7 +15,7 @@ template<>
 Img<Format::RGBA32>::Img(uint w, uint h)
     : width(w)
     , height(h)
-    , data(w*h*sizeof(uint))
+    , data(w*h*RGBBPP)
 {
 }
 
@@ -38,7 +39,7 @@ template<>
 Img<Format::RGBA32>::Img(uint w, uint h, uchar *dataToCopy)
     : width(w)
     , height(h)
-    , data(w*h*sizeof(uint), 0)
+    , data(w*h*RGBBPP, 0)
 {
     for (int y = 0; y < height; ++y)
     {
@@ -54,7 +55,7 @@ Img<Format::RGBA32>::Img(uint w, uint h, uchar *dataToCopy)
 template<>
 uchar* Img<Format::RGBA32>::scanLine(int y)
 {
-    return reinterpret_cast<uchar*>(data.data() + y*width*sizeof(uint));
+    return reinterpret_cast<uchar*>(data.data() + y*width*RGBBPP);
 }
 
 template<>
@@ -66,7 +67,7 @@ uchar* Img<Format::GRAYSCALE8>::scanLine(int y)
 template<>
 const uchar* Img<Format::RGBA32>::constScanLine(int y) const
 {
-    return data.data() + y*width*sizeof(uint);
+    return data.data() + y*width*RGBBPP;
 }
 
 template<>

@@ -25,10 +25,10 @@ auto main() -> int
     Accumulator accumulator(width, height);
 
     int depth = 0x10;
-    for (auto& filename: filenames)
+//    for (auto& filename: filenames)
     {
-        cv::Mat testImageMat = cv::imread(filename.c_str(), CV_LOAD_IMAGE_COLOR);
-        bugDepth::RgbImg testImage(width, height, testImageMat.data);
+        cv::Mat readImg = cv::imread(filenames[0].c_str(), -1);
+        bugDepth::RgbImg testImage(width, height, readImg.data);
         bugDepth::GrayImg edges = detector.sobel(testImage);
         cv::Mat temp(edges.getHeight(), edges.getWidth(), CV_8UC1, edges.getData());
         cv::imwrite("res/result.png", temp);
@@ -36,6 +36,32 @@ auto main() -> int
         depth += 0x10;
     }
 
+//    accumulator.setBg(sampleImage);
+
+//    auto resultdir = prepareResultDir();
+
+//    QImage&& result = accumulator.getSharpImage();
+//    result.save(resultdir.filePath("result.png"));
+
+//    QImage&& depthMap = accumulator.getDepthMap();
+//    depthMap.save(resultdir.filePath("depthMap.png"));
+
+//    -----------------
+//    bugDepth::EdgeDetector detector;
+
+//    auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
+
+//    QImage sampleImage(filenames[0].c_str());
+//    Accumulator accumulator(sampleImage.width(), sampleImage.height());
+
+//    int depth = 0x10;
+//    for (auto& filename: filenames)
+//    {
+//        QImage testImage(filename.c_str());
+//        QImage edges = detector.sobel(testImage);
+//        accumulator.accumulate(testImage, edges, depth);
+//        depth += 0x10;
+//    }
 //    accumulator.setBg(sampleImage);
 
 //    auto resultdir = prepareResultDir();

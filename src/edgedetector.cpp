@@ -15,25 +15,21 @@ const matrix<int, 3, 3> sobely {{ {{1, 2, 1}}, {{0, 0, 0}}, {{-1, -2, -1}} }};
 
 GrayImg EdgeDetector::sobel(Img<Format::RGBA32>& original) {
     GrayImg input = convertToGrayScale(original);
-//    QImage temp(original.getData(), original.getWidth(), original.getHeight(), QImage::Format_RGB32);
-//    QImage input = temp.convertToFormat(QImage::Format_Grayscale8);
-//    QImage res(input.size(), input.format());
-//    GrayImg res(original.getHeight(), original.getWidth());
-//    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
+    GrayImg res(original.getHeight(), original.getWidth());
+    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
 //    return convolution(sobelx, input);
-//    return res;
-    return input;
+    return res;
 }
 
-void EdgeDetector::magnitude(GrayImg& input, GrayImg gx, const GrayImg& gy) {
+void EdgeDetector::magnitude(GrayImg& input, const GrayImg&& gx, const GrayImg&& gy) {
     uchar *line = nullptr;
-    uchar *gx_line = nullptr, *gy_line = nullptr;
+    const uchar *gx_line = nullptr, *gy_line = nullptr;
 
     for (int y = 0; y < input.getHeight(); y++) {
         line = input.scanLine(y);
-        gx_line = gx.scanLine(y);
+        gx_line = gx.constScanLine(y);
 //        gy_line = gy.scanLine(y);
-        std::cout << gx_line[0] << std::endl;
+//        std::cout << gx_line[0] << std::endl;
 //        for (int x = 0; x < input.getWidth()/10; x++);
 //            std::cout << gx_line[0] << std::endl;
 //            line[x] = std::min(std::max(0x00, static_cast<int>(hypot(gx_line[x], gy_line[x]))), 0xFF);
@@ -78,6 +74,7 @@ GrayImg EdgeDetector::convertToGrayScale(const Img<Format::RGBA32> &original)
 {
     int height = original.getHeight();
     int width = original.getWidth();
+    auto bpp = bugDepth::RGBBPP;
 
     GrayImg grayScaleImg(width, height);
     for (int y = 0; y < height; ++y)
@@ -85,11 +82,11 @@ GrayImg EdgeDetector::convertToGrayScale(const Img<Format::RGBA32> &original)
         const uchar *sourceLine = original.constScanLine(y);
         uchar *grayLine = grayScaleImg.scanLine(y);
         int grayX = 0;
-        for (int x = 0; x < width*4; x+=4)
+        for (int x = 0; x < width*bpp; x+=bpp)
         {
-            uchar r = sourceLine[x];
+            uchar b = sourceLine[x];
             uchar g = sourceLine[x+1];
-            uchar b = sourceLine[x+2];
+            uchar r = sourceLine[x+2];
             grayLine[grayX] = (r + g + b)/3;
             grayX++;
         }

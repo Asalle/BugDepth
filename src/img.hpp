@@ -6,6 +6,7 @@ namespace bugDepth {
 
 using uchar = unsigned char;
 using uint = unsigned int;
+constexpr uint RGBBPP = 3;
 
 enum class Format : uchar
 {
