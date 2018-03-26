@@ -14,34 +14,36 @@ const matrix<int, 3, 3> sobelx {{ {{-1, 0, 1}}, {{-2, 0, 2}}, {{-1, 0, 1}} }};
 const matrix<int, 3, 3> sobely {{ {{1, 2, 1}}, {{0, 0, 0}}, {{-1, -2, -1}} }};
 
 GrayImg EdgeDetector::sobel(Img<Format::RGBA32>& original) {
-    GrayImg input = convertToGrayScale(original);
-    GrayImg res(original.getHeight(), original.getWidth());
-    magnitude(res, convolution(sobelx, input), convolution(sobely, input));
-//    return convolution(sobelx, input);
+    uint width = original.getWidth();
+    uint height = original.getHeight();
+    GrayImg input(width, height);
+    convertToGrayScale(original, input);
+    GrayImg res(width, height);
+    GrayImg convolutionX(width, height);
+    GrayImg convolutionY(width, height);
+    convolution(sobelx, input, convolutionX);
+    convolution(sobely, input, convolutionY);
+
+    magnitude(res, convolutionX, convolutionY);
     return res;
 }
 
-void EdgeDetector::magnitude(GrayImg& input, const GrayImg&& gx, const GrayImg&& gy) {
-    uchar *line = nullptr;
-    const uchar *gx_line = nullptr, *gy_line = nullptr;
-
-    for (int y = 0; y < input.getHeight(); y++) {
-        line = input.scanLine(y);
-        gx_line = gx.constScanLine(y);
-//        gy_line = gy.scanLine(y);
-//        std::cout << gx_line[0] << std::endl;
-//        for (int x = 0; x < input.getWidth()/10; x++);
-//            std::cout << gx_line[0] << std::endl;
-//            line[x] = std::min(std::max(0x00, static_cast<int>(hypot(gx_line[x], gy_line[x]))), 0xFF);
-//            line[x] = qBound(0x00, static_cast<int>(hypot(gx_line[x], gy_line[x])), 0xFF);
+void EdgeDetector::magnitude(GrayImg& input, const GrayImg& gx, const GrayImg& gy) {
+    for (int y = 0; y < input.getHeight(); ++y) {
+        uchar *line = input.scanLine(y);
+        const uchar *gx_line = gx.constScanLine(y);
+        const uchar *gy_line = gy.constScanLine(y);
+        for (int x = 0; x < input.getWidth(); ++x)
+        {
+            line[x] = std::min(std::max(0x00, static_cast<int>(hypot(gx_line[x], gy_line[x]))), 0xFF);
+        }
     }
 }
 
-GrayImg EdgeDetector::convolution(const auto& kernel, const GrayImg& image) {
+GrayImg EdgeDetector::convolution(const auto& kernel, const GrayImg& image, GrayImg& out) {
     int kw = kernel[0].size(), kh = kernel.size(),
         offsetx = kw / 2, offsety = kw / 2;
 
-    GrayImg out(image.getWidth(), image.getHeight());
     float sum = 0;
 
     uchar *line = nullptr;
@@ -70,13 +72,12 @@ GrayImg EdgeDetector::convolution(const auto& kernel, const GrayImg& image) {
     return out;
 }
 
-GrayImg EdgeDetector::convertToGrayScale(const Img<Format::RGBA32> &original)
+void EdgeDetector::convertToGrayScale(const Img<Format::RGBA32> &original, GrayImg& grayScaleImg)
 {
     int height = original.getHeight();
     int width = original.getWidth();
     auto bpp = bugDepth::RGBBPP;
 
-    GrayImg grayScaleImg(width, height);
     for (int y = 0; y < height; ++y)
     {
         const uchar *sourceLine = original.constScanLine(y);
@@ -91,8 +92,6 @@ GrayImg EdgeDetector::convertToGrayScale(const Img<Format::RGBA32> &original)
             grayX++;
         }
     }
-
-    return grayScaleImg;
 }
 
 }
