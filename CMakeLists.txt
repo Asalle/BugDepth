@@ -9,8 +9,6 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 option(BUILD_TESTING "Build tests." OFF)
 
-find_package(OpenCV REQUIRED)
-
 add_subdirectory(src)
 
 if(BUILD_TESTING)

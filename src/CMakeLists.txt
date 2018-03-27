@@ -13,5 +13,4 @@ include_directories(${Qt5Gui_INCLUDE_DIRS}
 target_link_libraries(bugDepth
                       Qt5::Widgets
                       Qt5::Gui
-                      "stdc++fs"
-                      ${OpenCV_LIBS})
+                      "stdc++fs")
