@@ -3,74 +3,69 @@
 
 namespace bugDepth {
 
-Accumulator::Accumulator(unsigned int width, unsigned int height)
+Accumulator::Accumulator(uint width, uint height)
     : sharpImage(width, height)
     , depthMap(width, height)
 {
 }
 
-void Accumulator::accumulate(RgbImg &image, GrayImg &grayScale, int depth)
+void Accumulator::accumulate(RgbImg &original, GrayImg &grayScale, int depth)
 {
-    uint *pastLineOrig = nullptr;
-    uint *pastLineRes = nullptr;
+    uint width = original.getWidth();
+    uint height = original.getHeight();
 
-    for (int y = 0; y < image.getHeight(); y++) {
-        uint *resultLine = reinterpret_cast<uint*>(sharpImage.scanLine(y));
-        uint *origLine = reinterpret_cast<uint*>(image.scanLine(y));
+    for (int y = 1; y < height-1; y++)
+    {
+        uint *midDestLine = reinterpret_cast<uint*>(sharpImage.scanLine(y));
+        uint *midSrcLine = reinterpret_cast<uint*>(original.scanLine(y));
+
         uchar *grayLine = grayScale.scanLine(y);
         uchar *depthMapLine = depthMap.scanLine(y);
-        for (int x = 1; x < image.getWidth()-1; x++) {
-            if (resultLine[x] == 0x00 && grayLine[x] > treshold) {
-                resultLine[x] = origLine[x];
-                resultLine[x-1] = origLine[x-1];
-                resultLine[x+1] = origLine[x+1];
 
-                if (pastLineOrig and pastLineRes)
-                {
-                    pastLineRes[x] = pastLineOrig[x];
-                    pastLineRes[x-1] = pastLineOrig[x-1];
-                    pastLineRes[x+1] = pastLineOrig[x+1];
-                }
+        uint *pastLineRes = reinterpret_cast<uint*>(sharpImage.scanLine(y-1));
+        uint *pastLineOrig = reinterpret_cast<uint*>(original.scanLine(y-1));
 
-                uint *nextOrigLine = reinterpret_cast<uint*>(image.scanLine(y+1));
-                uint *nextResLine = reinterpret_cast<uint*>(sharpImage.scanLine(y+1));
-                nextResLine[x] = nextOrigLine[x];
-                nextResLine[x-1] = nextOrigLine[x-1];
-                nextResLine[x+1] = nextOrigLine[x+1];
+        uint *nextOrigLine = reinterpret_cast<uint*>(original.scanLine(y+1));
+        uint *nextResLine = reinterpret_cast<uint*>(sharpImage.scanLine(y+1));
+        for (int x = 1; x < width-1; x++)
+        {
+            if (midDestLine[x] == 0x00 && grayLine[x] > treshold)
+            {
+                copy3InRow(midDestLine, midSrcLine, x);
+                copy3InRow(pastLineRes, pastLineOrig, x);
+                copy3InRow(nextResLine, nextOrigLine, x);
             }
 
             if (grayLine[x] > depthMapThreshold)
             {
                 auto actualDepth = std::min(depth, 0xff);
-                depthMapLine[x] = actualDepth;
-                depthMapLine[x-1] = actualDepth;
-                depthMapLine[x+1] = actualDepth;
+                set3inRow(depthMapLine, actualDepth, x);
             }
         }
-        pastLineRes = resultLine;
-        pastLineOrig = origLine;
     }
 }
 
 void Accumulator::setBg(RgbImg &bg)
 {
-    for (int y = 0; y < bg.getHeight(); y++) {
-        uint *acline = reinterpret_cast<uint*>(sharpImage.scanLine(y));
+    for (int y = 0; y < bg.getHeight(); y++)
+    {
+        uint *destline = reinterpret_cast<uint*>(sharpImage.scanLine(y));
         uint *bgline = reinterpret_cast<uint*>(bg.scanLine(y));
 
-        for (int x = 0; x < bg.getWidth(); x++) {
-            if (acline[x] < 0x10)
-                acline[x] = bgline[x];
+        for (int x = 0; x < bg.getWidth(); x++)
+        {
+            if (destline[x] < 0x10)
+                destline[x] = bgline[x];
         }
     }
 }
 
-RgbImg Accumulator::getSharpImage() const
+RgbImg& Accumulator::getSharpImage()
 {
     return sharpImage;
 }
 
-GrayImg Accumulator::getDepthMap() const
+GrayImg& Accumulator::getDepthMap()
 {
     return depthMap;
 }

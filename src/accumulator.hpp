@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <QImage>
 #include "img.hpp"
 
 namespace bugDepth {
@@ -8,17 +7,33 @@ namespace bugDepth {
 class Accumulator
 {
 public:
-    Accumulator(unsigned int width, unsigned int height);
-    void accumulate(RgbImg& original, GrayImg& grayScale, int depth);
-    void setBg(RgbImg& bg);
-    RgbImg getSharpImage() const;
-    GrayImg getDepthMap() const;
+    Accumulator(uint width, uint height);
+    void accumulate(RgbImg &original, GrayImg &grayScale, int depth);
+    void setBg(RgbImg &backGround);
+    RgbImg& getSharpImage();
+    GrayImg& getDepthMap();
 
 private:
+    template<typename T>
+    void copy3InRow(T *dest, const T *src, int x)
+    {
+        dest[x] = src[x];
+        dest[x-1] = src[x-1];
+        dest[x+1] = src[x+1];
+    }
+
+    template<typename T>
+    void set3inRow(T *dest, uint value, int x)
+    {
+        dest[x] = value;
+        dest[x-1] = value;
+        dest[x+1] = value;
+    }
+
     RgbImg sharpImage;
     GrayImg depthMap;
-    unsigned int treshold = 0x55;
-    unsigned int depthMapThreshold = 0x40;
+    uint treshold = 0x55;
+    uint depthMapThreshold = 0x40;
 };
 
 }
