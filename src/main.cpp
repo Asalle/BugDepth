@@ -1,76 +1,49 @@
-#include <opencv2/opencv.hpp>
-//#include <QDir>
+#include <QDir>
+#include <QImage>
 #include "accumulator.hpp"
 #include "argparser.hpp"
 #include "edgedetector.hpp"
 
-//QDir prepareResultDir()
-//{
-//    QDir resultdir("res/result");
-//    if (resultdir.exists())
-//        resultdir.removeRecursively();
-//    resultdir.mkpath(".");
+QDir prepareResultDir()
+{
+    QDir resultdir("res/result");
+    if (resultdir.exists())
+        resultdir.removeRecursively();
+    resultdir.mkpath(".");
 
-//    return resultdir;
-//}
+    return resultdir;
+}
 
 auto main() -> int
 {
-    bugDepth::EdgeDetector detector;
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
 
-    cv::Mat sampleImage = cv::imread(filenames[0].c_str(), CV_LOAD_IMAGE_COLOR);
-    const uint width = sampleImage.size().width;
-    const uint height = sampleImage.size().height;
-    Accumulator accumulator(width, height);
+    QImage sampleImage(filenames.front().c_str());
+    const uint width = sampleImageMat.width();
+    const uint height = sampleImageMat.height();
 
+    bugDepth::EdgeDetector detector;
+    bugDepth::Accumulator accumulator(width, height);
     int depth = 0x10;
-//    for (auto& filename: filenames)
+    for (auto& filename: filenames)
     {
-        cv::Mat readImg = cv::imread(filenames[0].c_str(), -1);
-        bugDepth::RgbImg testImage(width, height, readImg.data);
+        QImage readImg(filename.c_str());
+        bugDepth::RgbImg testImage(width, height, readImg.bits());
         bugDepth::GrayImg edges = detector.sobel(testImage);
-        cv::Mat temp(edges.getHeight(), edges.getWidth(), CV_8UC1, edges.getData());
-        cv::imwrite("res/result.png", temp);
-//        accumulator.accumulate(testImage, edges, depth);
+        accumulator.accumulate(testImage, edges, depth);
         depth += 0x10;
     }
 
-//    accumulator.setBg(sampleImage);
+    bugDepth::RgbImg sampleImage(width, height, sampleImageMat.bits());
+    accumulator.setBg(sampleImage);
+    auto resultdir = prepareResultDir();
 
-//    auto resultdir = prepareResultDir();
+    auto res = accumulator.getSharpImage();
+    QImage result(res.getData(), res.getWidth(), res.getHeight(), QImage::Format_RGB32);
+    result.save(resultdir.filePath("result.png"));
 
-//    QImage&& result = accumulator.getSharpImage();
-//    result.save(resultdir.filePath("result.png"));
-
-//    QImage&& depthMap = accumulator.getDepthMap();
-//    depthMap.save(resultdir.filePath("depthMap.png"));
-
-//    -----------------
-//    bugDepth::EdgeDetector detector;
-
-//    auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
-
-//    QImage sampleImage(filenames[0].c_str());
-//    Accumulator accumulator(sampleImage.width(), sampleImage.height());
-
-//    int depth = 0x10;
-//    for (auto& filename: filenames)
-//    {
-//        QImage testImage(filename.c_str());
-//        QImage edges = detector.sobel(testImage);
-//        accumulator.accumulate(testImage, edges, depth);
-//        depth += 0x10;
-//    }
-//    accumulator.setBg(sampleImage);
-
-//    auto resultdir = prepareResultDir();
-
-//    QImage&& result = accumulator.getSharpImage();
-//    result.save(resultdir.filePath("result.png"));
-
-//    QImage&& depthMap = accumulator.getDepthMap();
-//    depthMap.save(resultdir.filePath("depthMap.png"));
-
+    auto resDepthMap = accumulator.getDepthMap();
+    QImage resultDepth(resDepthMap.getData(), resDepthMap.getWidth(), resDepthMap.getHeight(), QImage::Format_Grayscale8);
+    resultDepth.save(resultdir.filePath("depthMap.png"));
     return 0;
 }

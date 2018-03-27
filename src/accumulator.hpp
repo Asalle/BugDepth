@@ -1,19 +1,24 @@
 #pragma once
 
-#include <QImage>
+//#include <QImage>
+#include "img.hpp"
+
+namespace bugDepth {
 
 class Accumulator
 {
 public:
     Accumulator(unsigned int width, unsigned int height);
-    void accumulate(QImage& original, QImage& grayScale, int depth);
-    void setBg(QImage& bg);
-    QImage getSharpImage() const;
-    QImage getDepthMap() const;
+    void accumulate(RgbImg& original, GrayImg& grayScale, int depth);
+    void setBg(RgbImg& bg);
+    RgbImg getSharpImage() const;
+    GrayImg getDepthMap() const;
 
 private:
-    QImage sharpImage;
-    QImage depthMap;
+    RgbImg sharpImage;
+    GrayImg depthMap;
     unsigned int treshold = 0x55;
     unsigned int depthMapThreshold = 0x40;
 };
+
+}

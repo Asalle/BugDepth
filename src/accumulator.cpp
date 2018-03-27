@@ -1,23 +1,25 @@
 #include "accumulator.hpp"
 #include <algorithm>
 
+namespace bugDepth {
+
 Accumulator::Accumulator(unsigned int width, unsigned int height)
-    : sharpImage(width, height, QImage::Format::Format_ARGB32)
-    , depthMap(width, height, QImage::Format::Format_Grayscale8)
+    : sharpImage(width, height)
+    , depthMap(width, height)
 {
 }
 
-void Accumulator::accumulate(QImage &image, QImage &grayScale, int depth)
+void Accumulator::accumulate(RgbImg &image, GrayImg &grayScale, int depth)
 {
-    QRgb *pastLineOrig = nullptr;
-    QRgb *pastLineRes = nullptr;
+    uint *pastLineOrig = nullptr;
+    uint *pastLineRes = nullptr;
 
-    for (int y = 0; y < image.height(); y++) {
-        QRgb *resultLine = reinterpret_cast<QRgb*>(sharpImage.scanLine(y));
-        QRgb *origLine = reinterpret_cast<QRgb*>(image.scanLine(y));
-        quint8 *grayLine = grayScale.scanLine(y);
-        quint8 *depthMapLine = depthMap.scanLine(y);
-        for (int x = 1; x < image.width()-1; x++) {
+    for (int y = 0; y < image.getHeight(); y++) {
+        uint *resultLine = reinterpret_cast<uint*>(sharpImage.scanLine(y));
+        uint *origLine = reinterpret_cast<uint*>(image.scanLine(y));
+        uchar *grayLine = grayScale.scanLine(y);
+        uchar *depthMapLine = depthMap.scanLine(y);
+        for (int x = 1; x < image.getWidth()-1; x++) {
             if (resultLine[x] == 0x00 && grayLine[x] > treshold) {
                 resultLine[x] = origLine[x];
                 resultLine[x-1] = origLine[x-1];
@@ -29,6 +31,12 @@ void Accumulator::accumulate(QImage &image, QImage &grayScale, int depth)
                     pastLineRes[x-1] = pastLineOrig[x-1];
                     pastLineRes[x+1] = pastLineOrig[x+1];
                 }
+
+                uint *nextOrigLine = reinterpret_cast<uint*>(image.scanLine(y+1));
+                uint *nextResLine = reinterpret_cast<uint*>(sharpImage.scanLine(y+1));
+                nextResLine[x] = nextOrigLine[x];
+                nextResLine[x-1] = nextOrigLine[x-1];
+                nextResLine[x+1] = nextOrigLine[x+1];
             }
 
             if (grayLine[x] > depthMapThreshold)
@@ -44,28 +52,27 @@ void Accumulator::accumulate(QImage &image, QImage &grayScale, int depth)
     }
 }
 
-void Accumulator::setBg(QImage &bg)
+void Accumulator::setBg(RgbImg &bg)
 {
-    QRgb *acline;
-    QRgb *bgline;
+    for (int y = 0; y < bg.getHeight(); y++) {
+        uint *acline = reinterpret_cast<uint*>(sharpImage.scanLine(y));
+        uint *bgline = reinterpret_cast<uint*>(bg.scanLine(y));
 
-    for (int y = 0; y < bg.height(); y++) {
-        acline = reinterpret_cast<QRgb*>(sharpImage.scanLine(y));
-        bgline = reinterpret_cast<QRgb*>(bg.scanLine(y));
-
-        for (int x = 0; x < bg.width(); x++) {
+        for (int x = 0; x < bg.getWidth(); x++) {
             if (acline[x] < 0x10)
                 acline[x] = bgline[x];
         }
     }
 }
 
-QImage Accumulator::getSharpImage() const
+RgbImg Accumulator::getSharpImage() const
 {
     return sharpImage;
 }
 
-QImage Accumulator::getDepthMap() const
+GrayImg Accumulator::getDepthMap() const
 {
     return depthMap;
+}
+
 }

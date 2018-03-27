@@ -6,7 +6,7 @@ namespace bugDepth {
 
 using uchar = unsigned char;
 using uint = unsigned int;
-constexpr uint RGBBPP = 3;
+constexpr uint RGBBPP = 4;
 
 enum class Format : uchar
 {
@@ -32,5 +32,8 @@ private:
     uint height;
     std::vector<uchar> data;
 };
+
+using GrayImg = Img<Format::GRAYSCALE8>;
+using RgbImg = Img<Format::RGBA32>;
 
 }
