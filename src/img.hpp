@@ -19,7 +19,7 @@ class Img
 {
 public:
     Img(uint width, uint height);
-    Img(uint width, uint height, uchar* data);
+    Img(uint width, uint height, uchar* data); // performs deep copy
     uint getWidth() const { return width; }
     uint getHeight() const { return height; }
     uchar* getData() { return data.data(); }

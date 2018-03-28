@@ -1,4 +1,3 @@
-#include <stdexcept>
 #include "img.hpp"
 
 namespace bugDepth {
@@ -67,7 +66,7 @@ uchar* Img<Format::GRAYSCALE8>::scanLine(int y)
 template<>
 const uchar* Img<Format::RGBA32>::constScanLine(int y) const
 {
-    return data.data() + y*width*RGBBPP;
+    return reinterpret_cast<const uchar*>(data.data() + y*width*RGBBPP);
 }
 
 template<>
