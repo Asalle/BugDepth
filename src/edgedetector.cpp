@@ -1,7 +1,7 @@
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <ctgmath>
-#include <opencv2/opencv.hpp>
 
 #include "edgedetector.hpp"
 
@@ -40,7 +40,7 @@ void EdgeDetector::magnitude(GrayImg& input, const GrayImg& gx, const GrayImg& g
     }
 }
 
-GrayImg EdgeDetector::convolution(const auto& kernel, const GrayImg& image, GrayImg& out) {
+void EdgeDetector::convolution(const auto& kernel, const GrayImg& image, GrayImg& out) {
     int kw = kernel[0].size(), kh = kernel.size(),
         offsetx = kw / 2, offsety = kw / 2;
 
@@ -68,11 +68,9 @@ GrayImg EdgeDetector::convolution(const auto& kernel, const GrayImg& image, Gray
             line[x] = std::min(std::max(0x00, static_cast<int>(sum)), 0xFF);
         }
     }
-
-    return out;
 }
 
-void EdgeDetector::convertToGrayScale(const Img<Format::RGBA32> &original, GrayImg& grayScaleImg)
+void EdgeDetector::convertToGrayScale(const RgbImg &original, GrayImg& grayScaleImg)
 {
     int height = original.getHeight();
     int width = original.getWidth();
