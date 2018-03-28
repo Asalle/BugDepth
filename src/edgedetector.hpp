@@ -1,17 +1,19 @@
 #pragma once
 
-#include <QImage>
+//#include <QImage>
+
+#include "img.hpp"
 
 namespace bugDepth {
 
 class EdgeDetector
 {
 public:
-    QImage sobel(QImage& input);
+    GrayImg sobel(Img<Format::RGBA32>& input);
 private:
-    void magnitude(QImage& input, const QImage& gx, const QImage& gy);
-    QImage convolution(const auto& kernel, const QImage& image);
-    QImage convertToGrayScale(QImage& original);
+    void magnitude(GrayImg& input, const GrayImg& gx, const GrayImg& gy);
+    void convolution(const auto& kernel, const GrayImg& image, GrayImg& out);
+    void convertToGrayScale(const RgbImg& original, GrayImg& grayScaleImg);
 };
 
 }

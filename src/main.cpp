@@ -16,28 +16,36 @@ QDir prepareResultDir()
 
 auto main() -> int
 {
-    bugDepth::EdgeDetector detector;
-
     auto filenames = bugDepth::ArgParser::prepareImageFileNames("res/bug/");
 
-    QImage sampleImage(filenames[0].c_str());
-    Accumulator accumulator(sampleImage.width(), sampleImage.height());
+    QImage sampleQImage(filenames.front().c_str());
+    const uint width = sampleQImage.width();
+    const uint height = sampleQImage.height();
 
+    bugDepth::EdgeDetector detector;
+    bugDepth::Accumulator accumulator(width, height);
+
+    int depth = 0x10;
     for (auto& filename: filenames)
     {
-        QImage testImage(filename.c_str());
-        QImage edges = detector.sobel(testImage);
-        accumulator.accumulate(testImage, edges);
+        QImage inImage(filename.c_str());
+        bugDepth::RgbImg testImage(width, height, inImage.bits());
+        bugDepth::GrayImg edges = detector.sobel(testImage);
+        accumulator.accumulate(testImage, edges, depth);
+        depth += 0x20;
     }
+
+    bugDepth::RgbImg sampleImage(width, height, sampleQImage.bits());
     accumulator.setBg(sampleImage);
 
     auto resultdir = prepareResultDir();
 
-    QImage&& result = accumulator.getAcumulated();
-    result.save(resultdir.filePath("result.png"));
+    auto sharpImage = accumulator.getSharpImage();
+    QImage sharpQImage(sharpImage.getData(), width, height, QImage::Format_RGB32);
+    sharpQImage.save(resultdir.filePath("result.png"));
 
-    QImage&& depthMap = detector.sobel(result);
-    depthMap.save(resultdir.filePath("depthMap.png"));
-
+    auto depthMap = accumulator.getDepthMap();
+    QImage depthMapQImage(depthMap.getData(), width, height, QImage::Format_Grayscale8);
+    depthMapQImage.save(resultdir.filePath("depthMap.png"));
     return 0;
 }
